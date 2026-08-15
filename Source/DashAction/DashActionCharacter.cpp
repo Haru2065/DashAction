@@ -23,7 +23,7 @@ ADashActionCharacter::ADashActionCharacter()
 	bUseControllerRotationRoll = false;
 
 	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 180.0f);
 
 	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
@@ -75,10 +75,19 @@ void ADashActionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 void ADashActionCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+	
+	const FVector ForwardDirection = GetActorForwardVector();
+	const FVector RightDirection = GetActorRightVector();
 
 	// route the input
-	DoMove(MovementVector.X, MovementVector.Y);
+	//DoMove(MovementVector.X, MovementVector.Y);
+
+	//前後
+	AddMovementInput(ForwardDirection, MovementVector.Y);
+
+	//左右スライド。体は回転しない
+	AddMovementInput(RightDirection, MovementVector.X);
 }
 
 void ADashActionCharacter::Look(const FInputActionValue& Value)
