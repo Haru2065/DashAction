@@ -50,6 +50,41 @@ ADashActionCharacter::ADashActionCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void ADashActionCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (playerData)
+	{
+		//最初から最大速度でスタート
+		CurrentSpeed = playerData->MaxWalkSpeed;
+
+		//キャラクタームーブメントコンポーネントにも更新
+		GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
+	}
+}
+
+void ADashActionCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (!playerData) return;
+
+	//目標速度
+	float TargetSpeed = CurrentSpeed;
+
+	//加速度と減速度の値(0のままなら速度変化なし)
+	float RateToUse = 0.f;
+
+	//加速状態になったとき最高速度に向かって数値を加算
+	if (bIsAccelerating)
+	{
+		//Wキーを推している間最高速度に向かって加算する
+		TargetSpeed = playerData->MaxWalkSpeed;
+		RateToUse = playerData->Acceleration;
+	}
+}
+
 void ADashActionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
@@ -77,6 +112,8 @@ void ADashActionCharacter::Move(const FInputActionValue& Value)
 	// input is a Vector2D
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 	
+	// 体の向き(Actorの回転)を基準に前方向・右方向を取得
+	// ※コントローラーやカメラの向きは使わない → 体は移動しても回転せず固定される
 	const FVector ForwardDirection = GetActorForwardVector();
 	const FVector RightDirection = GetActorRightVector();
 

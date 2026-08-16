@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "DashActionCharacter.generated.h"
+#include "PlayerParameterData.h"
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -92,5 +93,37 @@ public:
 
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	//ここから追加記載内容
+public:
+
+	//プレイヤーのパラメータデータアセット
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PlayerSpeed")
+	TObjectPtr<UPlayerParameterData> playerData;
+
+	//プレイヤーの現在の移動速度
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerSpeed")
+	float CurrentSpeed;
+	
+	//BPのInputAction(加速)
+	UFUNCTION(BlueprintCallable, Category = "PlayerSpeed")
+	void SetAccelerating(bool bNewValue);
+
+	//BPのInputAction(減速)
+	UFUNCTION(BlueprintCallable, Category = "PlayerSpeed")
+	void SetDecelerating(bool bNewValue);
+
+protected:
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+
+private:
+
+	//加速状態か
+	bool bIsAccelerating;
+
+	//減速状態か
+	bool bIsDecelerating;
+
 };
 
