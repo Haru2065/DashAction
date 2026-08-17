@@ -54,10 +54,11 @@ void ADashActionCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//プレイヤーのパラメータデータアセットが設定されていればそこから初期移動速度を読み込む
 	if (playerData)
 	{
 		//最初から最大速度でスタート
-		CurrentSpeed = playerData->MaxWalkSpeed;
+		CurrentSpeed = playerData->InitializeSpeed;
 
 		//キャラクタームーブメントコンポーネントにも更新
 		GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
@@ -70,7 +71,7 @@ void ADashActionCharacter::Tick(float DeltaTime)
 
 	if (!playerData) return;
 
-	//目標速度
+	//目標速度(初期値は現在速度)
 	float TargetSpeed = CurrentSpeed;
 
 	//加速度と減速度の値(0のままなら速度変化なし)
@@ -79,10 +80,86 @@ void ADashActionCharacter::Tick(float DeltaTime)
 	//加速状態になったとき最高速度に向かって数値を加算
 	if (bIsAccelerating)
 	{
-		//Wキーを推している間最高速度に向かって加算する
+		//Wキーを押している間最高速度に向かって加算する
 		TargetSpeed = playerData->MaxWalkSpeed;
 		RateToUse = playerData->Acceleration;
 	}
+
+	//加速状態になったとき最低速度に向かって数値を加算
+	else if (bIsDecelerating)
+	{
+		// Sキー押下中：最低速度に向かって、Decelerationの速さで減速する
+		TargetSpeed = playerData->MinWalkSpeed;
+		RateToUse = playerData->Deceleration;
+	}
+
+	// どちらも押されていない場合：TargetSpeed = CurrentSpeedのままなので変化しない
+	if (RateToUse > 0.f)
+	{
+		//現在速度を目標速度に向かって、RateToUseの速さで一定速度に変化させる
+		CurrentSpeed = FMath::FInterpConstantTo(CurrentSpeed, TargetSpeed, DeltaTime, RateToUse);
+
+		GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
+	}
+
+	///デバック表示(ビルド時には表示されない)
+	///現在の移動速度・加減速状態を画面上にオーバーレイ表示する
+#if !UE_BUILD_SHIPPING
+	if (GEngine)
+	{
+		// 現在の加減速状態によって表示色を切り替える
+		// 色分けすることで、数値を読まなくても状態が一瞬で判別できるようにする
+
+		//白 = ニュートラル（現状維持）
+		FColor DebugColor = FColor::White;
+
+		FString DebugState = TEXT("Neutral");
+
+		//緑 = 加速中
+		if (bIsAccelerating)
+		{
+			DebugColor = FColor::Green;
+			DebugState = TEXT("Accelerating");
+		}
+
+		//赤 = 減速中
+		else if(bIsDecelerating)
+		{
+			DebugColor = FColor::Red;
+			DebugState = TEXT("Decelerating");
+		}
+
+		//表示する文字列の組み立て
+		//CurrentSpeed:今の実速度
+		//State:加速/減速/ニュートラルのどれか
+		//Min/Max:PlayerDataで設定されている速度の範囲
+		const FString DebugMessage = FString::Printf(
+			TEXT("CurrentSpeed: %.1f | State: %s | Min: %.1f | Max: %.1f"),
+			CurrentSpeed, *DebugState, playerData->MinWalkSpeed, playerData->MaxWalkSpeed
+		);
+
+		//Key(=1)を固定することで、Tickの度に行が増えず1行だけを毎フレーム上書きする
+		GEngine->AddOnScreenDebugMessage(1, 0.0f, DebugColor, DebugMessage);
+	}
+#endif
+}
+
+//// <summary>
+/// Wキーでの入力状態をセットするメソッド
+/// </summary>
+/// <param name="bNewValue">true: Wキーが押されている（加速する） / false: Wキーが離された（加速をやめる）</param>
+void ADashActionCharacter::SetAccelerating(bool bNewValue)
+{
+	bIsAccelerating = bNewValue;
+}
+
+/// <summary>
+/// Sキーでの入力状態をセットするメソッド
+/// </summary>
+/// <param name="bNewValue">true: Sキーが押されている（減速する） / false: Sキーが離された（減速をやめる）</param>
+void ADashActionCharacter::SetDecelerating(bool bNewValue)
+{
+	bIsDecelerating = bNewValue;
 }
 
 void ADashActionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

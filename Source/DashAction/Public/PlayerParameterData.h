@@ -24,6 +24,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Speed")
 	float MinWalkSpeed = 0.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Speed")
+	float InitializeSpeed = 0.0f;
+
 	//‰Á‘¬“x
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Speed")
 	float Acceleration = 0.0f;

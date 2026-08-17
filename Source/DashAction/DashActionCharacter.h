@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
-#include "DashActionCharacter.generated.h"
 #include "PlayerParameterData.h"
+#include "DashActionCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -105,11 +105,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerSpeed")
 	float CurrentSpeed;
 	
-	//BPのInputAction(加速)
+	//BPのInputAction(加速)Wキーが押されているかどうかをチェックするメソッド
 	UFUNCTION(BlueprintCallable, Category = "PlayerSpeed")
 	void SetAccelerating(bool bNewValue);
 
-	//BPのInputAction(減速)
+	//BPのInputAction(減速)Sキーが押されているかどうかをチェックするメソッド
 	UFUNCTION(BlueprintCallable, Category = "PlayerSpeed")
 	void SetDecelerating(bool bNewValue);
 
