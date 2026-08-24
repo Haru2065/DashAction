@@ -10,14 +10,14 @@
     <Platform Name="Win64-arm64ec" />
   </Configurations>
   <Folder Name="/Engine/">
-    <Project Path="Intermediate/ProjectFiles/UE5.vcxproj" Id="c6f60d8f-29ca-367f-a437-3a0699385ded">
+    <Project Path="Intermediate/ProjectFiles/UE5.vcxproj" Id="6132c84d-3e04-38cb-9fce-9986bbea2f09">
       <BuildType Project="BuiltWithUnrealBuildTool" />
       <Platform Project="Win64" />
       <Build Project="false" />
     </Project>
   </Folder>
   <Folder Name="/Games/">
-    <Project Path="Intermediate/ProjectFiles/DashAction.vcxproj" Id="2dde6eff-998d-32f3-a96d-c26ec833a914">
+    <Project Path="Intermediate/ProjectFiles/DashAction.vcxproj" Id="2efcef0d-11b4-3a58-940f-e530945d450d">
       <BuildType Solution="DebugGame Editor|Win64" Project="DebugGame_Editor" />
       <BuildType Solution="DebugGame Editor|Win64-arm64" Project="Win64_arm64_DebugGame_Editor" />
       <BuildType Solution="DebugGame Editor|Win64-arm64ec" Project="Win64_arm64ec_DebugGame_Editor" />
