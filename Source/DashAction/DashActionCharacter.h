@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "PlayerParameterData.h"
+#include "NiagaraComponent.h"
 #include "DashActionCharacter.generated.h"
 
 class USpringArmComponent;
@@ -49,6 +50,9 @@ protected:
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Effect")
+	TObjectPtr<UNiagaraComponent> SpeedWindEffect;
 
 public:
 

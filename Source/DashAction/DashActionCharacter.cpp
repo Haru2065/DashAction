@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "DashAction.h"
+#include "NiagaraComponent.h"
 
 ADashActionCharacter::ADashActionCharacter()
 {
@@ -45,6 +46,10 @@ ADashActionCharacter::ADashActionCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	SpeedWindEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("SpeedWindEffect"));
+	SpeedWindEffect->SetupAttachment(GetRootComponent());
+
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -142,6 +147,15 @@ void ADashActionCharacter::Tick(float DeltaTime)
 		GEngine->AddOnScreenDebugMessage(1, 0.0f, DebugColor, DebugMessage);
 	}
 #endif
+
+	if (playerData)
+	{
+		const float Ratio = FMath::GetMappedRangeValueClamped(
+			FVector2D(playerData->MinWalkSpeed, playerData->MaxWalkSpeed),
+			FVector2D(0.f, 1.f),
+			CurrentSpeed);
+		SpeedWindEffect->SetVariableFloat(TEXT("User.SpeedRatio"), Ratio);
+	}
 }
 
 //// <summary>
